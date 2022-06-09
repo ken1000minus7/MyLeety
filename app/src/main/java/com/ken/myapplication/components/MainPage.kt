@@ -1,9 +1,8 @@
-package com.ken.myapplication
+package com.ken.myapplication.components
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -16,13 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MainPage() {
+fun MainPage(paddingValues: PaddingValues) {
     var nameState by rememberSaveable {
         mutableStateOf("")
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(paddingValues),
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Welcome", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -48,5 +47,5 @@ fun MainPage() {
 @Preview(showBackground = true)
 @Composable
 private fun MainPagePreview(){
-    MainPage()
+    MainPage(PaddingValues())
 }
