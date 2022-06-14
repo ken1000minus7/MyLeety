@@ -1,4 +1,4 @@
-package com.ken.myapplication.components
+package com.ken.myapplication.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -7,11 +7,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
@@ -22,11 +26,22 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ken.myapplication.R
+import com.ken.myapplication.data.User
+import com.ken.myapplication.utils.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilePage(){
+    val context = LocalContext.current
+    val userViewModel = viewModel(modelClass = UserViewModel::class.java)
+    val user : User? by remember {
+        mutableStateOf(null)
+    }
+    userViewModel.getUser("ken1000minus7")
+
     BoxWithConstraints {
         val constraintSet = if(minWidth < 600.dp) portraitConstraints() else landscapeConstraints()
 
@@ -54,7 +69,7 @@ fun ProfilePage(){
             }
 
             Text(
-                text = "Leety lover",
+                text = user?.username ?: "Doesnt exist",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.layoutId("name")

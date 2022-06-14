@@ -1,11 +1,11 @@
 package com.ken.myapplication.components
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun UserList(paddingValues: PaddingValues){
+fun FollowingList(lazyListState: LazyListState){
     val temp = listOf(
         "Hello",
         "Bye",
@@ -40,18 +40,18 @@ fun UserList(paddingValues: PaddingValues){
         "me"
     )
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
-            .padding(paddingValues)
+        modifier = Modifier.fillMaxSize(),
+        lazyListState
     ){
         items(temp){ item->
-            UserListItem(item = item)
+            FollowingListItem(item = item)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserListItem(item : String){
+fun FollowingListItem(item : String){
     ElevatedCard(
         modifier = Modifier
             .padding(5.dp)

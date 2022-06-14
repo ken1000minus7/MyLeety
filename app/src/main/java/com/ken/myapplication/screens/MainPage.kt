@@ -1,4 +1,4 @@
-package com.ken.myapplication.components
+package com.ken.myapplication.screens
 
 import android.util.Log
 import androidx.compose.foundation.layout.*

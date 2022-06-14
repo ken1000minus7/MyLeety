@@ -4,18 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.ken.myapplication.components.BottomNavigation
-import com.ken.myapplication.components.MainPage
-import com.ken.myapplication.components.TopBar
-import com.ken.myapplication.components.UserList
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.ken.myapplication.components.*
+import com.ken.myapplication.screens.ProfilePage
 import com.ken.myapplication.ui.theme.MyLeetyTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,25 +42,41 @@ class MainActivity : ComponentActivity() {
 fun MyLeetyApp(){
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
+    val navController = rememberNavController()
 
     androidx.compose.material.Scaffold(
+        drawerBackgroundColor = MaterialTheme.colorScheme.surface,
+        drawerContentColor = MaterialTheme.colorScheme.surface,
+        drawerScrimColor = DrawerDefaults.scrimColor,
+        backgroundColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.background,
         scaffoldState = scaffoldState,
         topBar = {
             TopBar(scope = scope, scaffoldState = scaffoldState)
         },
         bottomBar = {
-            BottomNavigation()
+            BottomNavigation(navController)
         },
         drawerContent = {
-            com.ken.myapplication.components.NavigationDrawer()
+            NavigationDrawer()
         },
-        drawerBackgroundColor = MaterialTheme.colorScheme.surface,
-        drawerContentColor = MaterialTheme.colorScheme.surface,
-        drawerScrimColor = DrawerDefaults.scrimColor,
-        backgroundColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.background
+        floatingActionButton = {
+            MainFab(lazyListState)
+        }
     ){
-        UserList(it)
+        NavHost(
+            navController = navController,
+            startDestination = "profile",
+            modifier = Modifier.padding(paddingValues = it)
+        ){
+            composable("profile"){
+                ProfilePage()
+            }
+            composable("following"){
+                FollowingList(lazyListState = lazyListState)
+            }
+        }
     }
 
 }

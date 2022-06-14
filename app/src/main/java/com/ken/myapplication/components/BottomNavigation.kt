@@ -5,23 +5,31 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ken.myapplication.model.BottomNavigationData
 
 @Composable
-fun BottomNavigation(){
+fun BottomNavigation(navController: NavController){
     val bottomNavigationItems = listOf(
         BottomNavigationData.Home,
         BottomNavigationData.Search
     )
     NavigationBar {
+        val navControllerBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navControllerBackStackEntry?.destination?.route
         bottomNavigationItems.forEach { item->
-            var selectedState by remember {
-                mutableStateOf(item is BottomNavigationData.Home)
-            }
+
             NavigationBarItem(
-                selected = selectedState,
+                selected = currentRoute==item.route,
                 onClick = {
-                    selectedState = true
+                    navController.navigate(item.route){
+                        popUpTo(navController.graph.startDestinationId){
+                            saveState = true
+                        }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
                 },
                 icon = {
                     Icon(item.icon,item.title)
