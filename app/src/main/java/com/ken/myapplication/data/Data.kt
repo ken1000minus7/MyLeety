@@ -1,5 +1,5 @@
 package com.ken.myapplication.data
 
 data class Data(
-    val matchedUser: User
+    val matchedUser: User?
 )

@@ -1,8 +1,6 @@
 package com.ken.myapplication.utils
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,11 +12,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(private val leetyApiRepository: LeetyApiRepository) : ViewModel() {
-    var user : User? by mutableStateOf(null)
+    val user : MutableLiveData<User?> = MutableLiveData(null)
 
     fun getUser(username : String){
         viewModelScope.launch {
-            user = leetyApiRepository.getUser(username)
+            user.value = leetyApiRepository.getUser(username)
+            Log.d("lol",user.value?.username ?: "sadge")
         }
     }
 }

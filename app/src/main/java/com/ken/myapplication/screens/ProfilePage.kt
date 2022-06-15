@@ -1,5 +1,6 @@
 package com.ken.myapplication.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,21 +28,25 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ken.myapplication.R
+import com.ken.myapplication.data.Profile
 import com.ken.myapplication.data.User
 import com.ken.myapplication.utils.UserViewModel
+import com.skydoves.landscapist.glide.GlideImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilePage(){
     val context = LocalContext.current
-    val userViewModel = viewModel(modelClass = UserViewModel::class.java)
-    val user : User? by remember {
-        mutableStateOf(null)
+    val userViewModel : UserViewModel = hiltViewModel()
+    val user = userViewModel.user.observeAsState()
+    val profile : Profile? by remember {
+        mutableStateOf(user.value?.profile)
     }
-    userViewModel.getUser("ken1000minus7")
+    userViewModel.getUser("ishwarendra")
 
     BoxWithConstraints {
         val constraintSet = if(minWidth < 600.dp) portraitConstraints() else landscapeConstraints()
@@ -58,8 +64,8 @@ fun ProfilePage(){
                     .clip(CircleShape)
                     .layoutId("image")
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                GlideImage(
+                    imageModel = user.value?.profile?.userAvatar,
                     contentDescription = "Image of ma boi",
                     modifier = Modifier
                         .fillMaxSize()
@@ -69,7 +75,7 @@ fun ProfilePage(){
             }
 
             Text(
-                text = user?.username ?: "Doesnt exist",
+                text = user.value?.username ?: "Doesnt exist",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.layoutId("name")
@@ -80,16 +86,18 @@ fun ProfilePage(){
                     .fillMaxWidth()
                     .layoutId("quesStats")
             ) {
-                QuestionStats(title = "Easy", value = 20, color = Color.Green)
-                QuestionStats(title = "Medium", value = 90, color = Color(0xFFC94E0C))
-                QuestionStats(title = "Hard", value = 11, color = Color.Red)
+                QuestionStats(title = "Easy", value = 0, color = Color.Green)
+                QuestionStats(title = "Medium", value = 0, color = Color(0xFFC94E0C))
+                QuestionStats(title = "Hard", value =  0, color = Color.Red)
             }
             Text(
-                text = "I love leety more than anything else, please leety give me lyf",
+                text = user.value?.profile?.aboutMe ?: "",
                 modifier = Modifier.layoutId("about")
             )
             Button(
-                onClick = {},
+                onClick = {
+                    Toast.makeText(context,user.value?.profile?.aboutMe,Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.layoutId("button")
             ) {
                 Text(text = "Clicky ma boi")
