@@ -9,6 +9,6 @@ sealed class BottomNavigationData(
     val title : String,
     val route : String
 ){
-    object Home : BottomNavigationData(Icons.Default.AccountCircle,"Profile","profile")
-    object Search : BottomNavigationData(Icons.Default.Person,"Following","following")
+    object Home : BottomNavigationData(Icons.Default.AccountCircle,"Profile",Routes.Profile)
+    object Search : BottomNavigationData(Icons.Default.Person,"Following",Routes.Following)
 }

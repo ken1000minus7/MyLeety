@@ -15,7 +15,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ken.myapplication.components.*
+import com.ken.myapplication.model.Routes
+import com.ken.myapplication.screens.MainPage
+import com.ken.myapplication.screens.OnBoarding
 import com.ken.myapplication.screens.ProfilePage
+import com.ken.myapplication.screens.SplashScreen
 import com.ken.myapplication.ui.theme.MyLeetyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,48 +41,23 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyLeetyApp(){
-    val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
     val navController = rememberNavController()
-
-    androidx.compose.material.Scaffold(
-        drawerBackgroundColor = MaterialTheme.colorScheme.surface,
-        drawerContentColor = MaterialTheme.colorScheme.surface,
-        drawerScrimColor = DrawerDefaults.scrimColor,
-        backgroundColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.background,
-        scaffoldState = scaffoldState,
-        topBar = {
-            TopBar(scope = scope, scaffoldState = scaffoldState)
-        },
-        bottomBar = {
-            BottomNavigation(navController)
-        },
-        drawerContent = {
-            NavigationDrawer()
-        },
-        floatingActionButton = {
-            MainFab(lazyListState)
-        }
+    NavHost(
+        navController = navController,
+        startDestination = Routes.SplashScreen
     ){
-        NavHost(
-            navController = navController,
-            startDestination = "profile",
-            modifier = Modifier.padding(paddingValues = it)
-        ){
-            composable("profile"){
-                ProfilePage()
-            }
-            composable("following"){
-                FollowingList(lazyListState = lazyListState)
-            }
+        composable(Routes.SplashScreen){
+            SplashScreen(navController)
+        }
+        composable(Routes.OnBoarding){
+            OnBoarding(navController = navController)
+        }
+        composable(Routes.MainPage){
+            MainPage(navController)
         }
     }
-
 }
 
 @Preview(showBackground = true)
