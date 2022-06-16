@@ -1,21 +1,43 @@
 package com.ken.myapplication.api
 
+import android.content.SharedPreferences
 import android.util.Log
-import com.ken.myapplication.data.User
-import org.json.JSONObject
 import javax.inject.Inject
 
-class LeetyApiRepositoryImpli @Inject constructor(val api: LeetyApi) : LeetyApiRepository {
+class LeetyApiRepositoryImpli @Inject constructor(
+    val api: LeetyApi,
+    val sharedPreferences: SharedPreferences
+    ) : LeetyApiRepository {
 
-    override suspend fun getUser(username : String) : User? {
+    override suspend fun getUser() : LeetyApiResult {
+        val username = sharedPreferences.getString("username",null) ?: return LeetyApiResult.NonExistentUser()
         val query = getQueryString(username)
-//        val jsonObject = JSONObject()
-//        jsonObject.put("query",query)
         val response = api.getUser(query)
+
         Log.d("lol", response.body()?.data?.matchedUser?.profile?.toString().toString())
         Log.d("lol", response.code().toString())
-//        Log.d("lol",response.raw().request.url.toString())
-        return response.body()?.data?.matchedUser
+
+        if(response.body()==null)
+            return LeetyApiResult.Failed()
+        if(response.body()!!.data.matchedUser==null)
+            return LeetyApiResult.NonExistentUser()
+
+        return LeetyApiResult.Success(response.body()!!.data.matchedUser)
+    }
+
+    override suspend fun getUser(username: String): LeetyApiResult {
+        val query = getQueryString(username)
+        val response = api.getUser(query)
+
+        Log.d("lol", response.body()?.data?.matchedUser?.profile?.toString().toString())
+        Log.d("lol", response.code().toString())
+
+        if(response.body()==null)
+            return LeetyApiResult.Failed()
+        if(response.body()!!.data.matchedUser==null)
+            return LeetyApiResult.NonExistentUser()
+
+        return LeetyApiResult.Success(response.body()!!.data.matchedUser)
     }
 
     private fun getQueryString(username : String) : String{

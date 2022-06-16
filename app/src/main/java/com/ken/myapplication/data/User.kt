@@ -1,5 +1,7 @@
 package com.ken.myapplication.data
 
+import com.ken.myapplication.room.SavedUser
+
 data class User(
     val activeBadge: Badge? = null,
     val badges: List<Badge> = listOf(),
@@ -30,6 +32,16 @@ data class User(
     val twitterUrl: String? = null,
     val upcomingBadges: List<UpcomingBadge> = listOf(),
     val userCalendar: UserCalendar,
-    val username: String? = null,
+    val username: String,
     val yearJoined: Int? = null
-)
+){
+    fun toSavedUser() : SavedUser{
+        return SavedUser(
+            username,
+            profile.userAvatar,
+            profile.aboutMe,
+            firstName,
+            lastName
+        )
+    }
+}

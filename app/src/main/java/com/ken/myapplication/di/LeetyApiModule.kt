@@ -2,6 +2,7 @@ package com.ken.myapplication.di
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.ken.myapplication.api.LeetyApi
@@ -50,8 +51,14 @@ object LeetyApiModule {
 
     @Provides
     @Singleton
-    fun provideLeetyApiRepository(api: LeetyApi) : LeetyApiRepository{
-        return LeetyApiRepositoryImpli(api)
+    fun provideLeetyApiRepository(api: LeetyApi,sharedPreferences: SharedPreferences) : LeetyApiRepository{
+        return LeetyApiRepositoryImpli(api,sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(app: Application) : SharedPreferences{
+        return app.getSharedPreferences("user",Context.MODE_PRIVATE)
     }
 
     private fun hasNetwork(app : Application): Boolean? {

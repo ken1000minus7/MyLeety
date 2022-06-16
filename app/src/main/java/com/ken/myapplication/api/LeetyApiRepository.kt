@@ -4,6 +4,7 @@ import com.ken.myapplication.data.User
 
 interface LeetyApiRepository {
 
-    suspend fun getUser(username : String) : User?
+    suspend fun getUser() : LeetyApiResult
+    suspend fun getUser(username : String) : LeetyApiResult
 
 }

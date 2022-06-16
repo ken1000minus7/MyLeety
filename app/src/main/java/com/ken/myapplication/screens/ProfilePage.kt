@@ -32,22 +32,41 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ken.myapplication.R
+import com.ken.myapplication.api.LeetyApiResult
 import com.ken.myapplication.data.Profile
 import com.ken.myapplication.data.User
 import com.ken.myapplication.utils.UserViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilePage(){
-    val context = LocalContext.current
+    
     val userViewModel : UserViewModel = hiltViewModel()
-    val user = userViewModel.user.observeAsState()
-    val profile : Profile? by remember {
-        mutableStateOf(user.value?.profile)
-    }
-    userViewModel.getUser("ishwarendra")
+    val apiResult = userViewModel.apiResult.observeAsState().value
+    val user = userViewModel.apiResult.observeAsState().value?.data
+    userViewModel.getUser("karan_8082")
 
+    when(apiResult){
+        is LeetyApiResult.Success -> {
+            ProfileContent(user = user!!)
+        }
+        is LeetyApiResult.NonExistentUser -> {
+            Text(text = "User does not exist")
+        }
+        is LeetyApiResult.Loading -> {
+            Text(text = "Loading please wait")
+        }
+        else -> {
+            Text(text = "Failed")
+        }
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileContent(user : User){
+    val context = LocalContext.current
     BoxWithConstraints {
         val constraintSet = if(minWidth < 600.dp) portraitConstraints() else landscapeConstraints()
 
@@ -65,7 +84,7 @@ fun ProfilePage(){
                     .layoutId("image")
             ) {
                 GlideImage(
-                    imageModel = user.value?.profile?.userAvatar,
+                    imageModel = user?.profile?.userAvatar,
                     contentDescription = "Image of ma boi",
                     modifier = Modifier
                         .fillMaxSize()
@@ -75,7 +94,7 @@ fun ProfilePage(){
             }
 
             Text(
-                text = user.value?.username ?: "Doesnt exist",
+                text = user?.username ?: "Doesnt exist",
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.layoutId("name")
@@ -86,17 +105,29 @@ fun ProfilePage(){
                     .fillMaxWidth()
                     .layoutId("quesStats")
             ) {
-                QuestionStats(title = "Easy", value = 0, color = Color.Green)
-                QuestionStats(title = "Medium", value = 0, color = Color(0xFFC94E0C))
-                QuestionStats(title = "Hard", value =  0, color = Color.Red)
+                QuestionStats(
+                    title = "Easy",
+                    value = if(user?.submitStats!=null && user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[1].count else 0,
+                    color = Color.Green
+                )
+                QuestionStats(
+                    title = "Medium",
+                    value = if(user?.submitStats!=null && user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[2].count else 0,
+                    color = Color(0xFFC94E0C)
+                )
+                QuestionStats(
+                    title = "Hard",
+                    value =  if(user?.submitStats!=null && user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[3].count else 0,
+                    color = Color.Red
+                )
             }
             Text(
-                text = user.value?.profile?.aboutMe ?: "",
+                text = user?.profile?.aboutMe ?: "",
                 modifier = Modifier.layoutId("about")
             )
             Button(
                 onClick = {
-                    Toast.makeText(context,user.value?.profile?.aboutMe,Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,user?.profile?.aboutMe,Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.layoutId("button")
             ) {
