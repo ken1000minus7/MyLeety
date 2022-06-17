@@ -5,6 +5,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ken.myapplication.model.BottomNavigationData
@@ -35,7 +36,7 @@ fun BottomNavigation(navController: NavController){
                     Icon(item.icon,item.title)
                 },
                 label = {
-                    Text(text = item.title)
+                    Text(text = item.title, fontWeight = FontWeight.Bold)
                 }
             )
         }

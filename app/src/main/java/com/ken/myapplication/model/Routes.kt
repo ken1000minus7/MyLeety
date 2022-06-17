@@ -8,4 +8,5 @@ object Routes {
     const val MainPage = "MainPage"
     const val Profile = "Profile"
     const val Following = "Following"
+    const val DetailsPage = "DetailsPage"
 }
