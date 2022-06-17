@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(private val leetyApiRepository: LeetyApiRepository) : ViewModel() {
-    val apiResult : MutableLiveData<LeetyApiResult> = MutableLiveData()
+    val apiResult : MutableLiveData<LeetyApiResult> = MutableLiveData(null)
 
     fun getUser(username : String){
         viewModelScope.launch {

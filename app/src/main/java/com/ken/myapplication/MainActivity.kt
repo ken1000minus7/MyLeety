@@ -16,10 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ken.myapplication.components.*
 import com.ken.myapplication.model.Routes
-import com.ken.myapplication.screens.MainPage
-import com.ken.myapplication.screens.OnBoarding
-import com.ken.myapplication.screens.ProfilePage
-import com.ken.myapplication.screens.SplashScreen
+import com.ken.myapplication.screens.*
 import com.ken.myapplication.ui.theme.MyLeetyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -53,6 +50,9 @@ fun MyLeetyApp(){
         }
         composable(Routes.OnBoarding){
             OnBoarding(navController = navController)
+        }
+        composable(Routes.LoginPage){
+            LoginPage(navController = navController)
         }
         composable(Routes.MainPage){
             MainPage(navController)

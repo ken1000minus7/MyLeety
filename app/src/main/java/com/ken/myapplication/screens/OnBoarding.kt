@@ -161,7 +161,7 @@ fun Page2(){
 fun Page3(navController: NavController){
     val navControllerBackStackEntry = navController.currentBackStackEntryAsState()
     Button(onClick = {
-        navController.navigate(Routes.MainPage){
+        navController.navigate(Routes.LoginPage){
             popUpTo(navControllerBackStackEntry.value?.destination?.route!!){
                 inclusive = true
             }

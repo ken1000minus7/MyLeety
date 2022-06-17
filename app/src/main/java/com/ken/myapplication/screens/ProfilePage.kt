@@ -7,11 +7,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,12 +37,18 @@ import com.ken.myapplication.utils.UserViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun ProfilePage(){
+fun ProfilePage(username : String? = null){
     
     val userViewModel : UserViewModel = hiltViewModel()
     val apiResult = userViewModel.apiResult.observeAsState().value
     val user = userViewModel.apiResult.observeAsState().value?.data
-    userViewModel.getUser("karan_8082")
+    val key by rememberSaveable {
+        mutableStateOf(true)
+    }
+    LaunchedEffect(key){
+        if(username==null) userViewModel.getUser()
+        else userViewModel.getUser(username)
+    }
 
     when(apiResult){
         is LeetyApiResult.Success -> {
@@ -84,7 +88,7 @@ fun ProfileContent(user : User){
                     .layoutId("image")
             ) {
                 GlideImage(
-                    imageModel = user?.profile?.userAvatar,
+                    imageModel = user.profile.userAvatar,
                     contentDescription = "Image of ma boi",
                     modifier = Modifier
                         .fillMaxSize()
@@ -94,7 +98,7 @@ fun ProfileContent(user : User){
             }
 
             Text(
-                text = user?.username ?: "Doesnt exist",
+                text = user.username,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.layoutId("name")
@@ -107,12 +111,12 @@ fun ProfileContent(user : User){
             ) {
                 QuestionStats(
                     title = "Easy",
-                    value = if(user?.submitStats!=null && user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[1].count else 0,
+                    value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[1].count else 0,
                     color = Color.Green
                 )
                 QuestionStats(
                     title = "Medium",
-                    value = if(user?.submitStats!=null && user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[2].count else 0,
+                    value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[2].count else 0,
                     color = Color(0xFFC94E0C)
                 )
                 QuestionStats(
@@ -122,7 +126,7 @@ fun ProfileContent(user : User){
                 )
             }
             Text(
-                text = user?.profile?.aboutMe ?: "",
+                text = user.profile.aboutMe ?: "",
                 modifier = Modifier.layoutId("about")
             )
             Button(
