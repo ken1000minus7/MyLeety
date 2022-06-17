@@ -45,10 +45,13 @@ fun ProfilePage(username : String? = null){
     val key by rememberSaveable {
         mutableStateOf(true)
     }
-    LaunchedEffect(key){
-        if(username==null) userViewModel.getUser()
-        else userViewModel.getUser(username)
+    if(user==null){
+        LaunchedEffect(key){
+            if(username==null) userViewModel.getUser()
+            else userViewModel.getUser(username)
+        }
     }
+
 
     when(apiResult){
         is LeetyApiResult.Success -> {
