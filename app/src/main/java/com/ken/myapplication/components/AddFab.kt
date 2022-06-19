@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun AddFab(lazyListState : LazyListState){
+fun AddFab(lazyListState : LazyListState,dialogState : MutableState<Boolean>){
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         text = {
@@ -20,7 +20,9 @@ fun AddFab(lazyListState : LazyListState){
         icon = {
             Icon(Icons.Default.Add,"ADD")
         },
-        onClick = { Toast.makeText(context,"Search up ma boi",Toast.LENGTH_SHORT).show() },
+        onClick = {
+            dialogState.value = true
+        },
         expanded = lazyListState.isScrollingUp()
     )
 }

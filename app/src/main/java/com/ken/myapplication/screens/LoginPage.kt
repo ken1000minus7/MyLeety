@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ken.myapplication.api.LeetyApiResult
+import com.ken.myapplication.components.Loading
 import com.ken.myapplication.model.Routes
 import com.ken.myapplication.utils.UserViewModel
 
@@ -130,7 +131,7 @@ fun LoginPage(navController: NavController){
         Dialog({
 
         }) {
-            CircularProgressIndicator()
+            Loading()
         }
     }
 }

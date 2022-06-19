@@ -34,6 +34,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ken.myapplication.R
 import com.ken.myapplication.api.LeetyApiResult
+import com.ken.myapplication.components.Loading
 import com.ken.myapplication.data.Profile
 import com.ken.myapplication.data.User
 import com.ken.myapplication.utils.UserViewModel
@@ -70,19 +71,7 @@ fun ProfilePage(username : String? = null){
             Text(text = "User does not exist")
         }
         is LeetyApiResult.Loading -> {
-            val composition = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loading))
-            val progress = animateLottieCompositionAsState(composition = composition.value, iterations = LottieConstants.IterateForever)
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LottieAnimation(composition = composition.value, progress = progress.value, modifier = Modifier
-                    .size(120.dp)
-                    .padding(10.dp))
-                Text(text = "Loading", fontSize = 25.sp, fontWeight = FontWeight.Bold)
-            }
-
+            Loading()
         }
         else -> {
             Text(text = "Failed")
