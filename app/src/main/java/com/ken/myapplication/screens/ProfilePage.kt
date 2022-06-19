@@ -29,6 +29,9 @@ import androidx.constraintlayout.compose.layoutId
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.*
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ken.myapplication.R
 import com.ken.myapplication.api.LeetyApiResult
 import com.ken.myapplication.data.Profile
@@ -42,6 +45,8 @@ fun ProfilePage(username : String? = null){
     val userViewModel : UserViewModel = hiltViewModel()
     val apiResult = userViewModel.apiResult.observeAsState().value
     val user = userViewModel.apiResult.observeAsState().value?.data
+    val refreshing = userViewModel.isRefreshing.observeAsState()
+    val refreshState = rememberSwipeRefreshState(isRefreshing = refreshing.value == true)
     val key by rememberSaveable {
         mutableStateOf(true)
     }
@@ -55,13 +60,29 @@ fun ProfilePage(username : String? = null){
 
     when(apiResult){
         is LeetyApiResult.Success -> {
-            ProfileContent(user = user!!)
+            SwipeRefresh(state = refreshState, onRefresh = {
+                userViewModel.refresh(username)
+            }) {
+                ProfileContent(user = user!!)
+            }
         }
         is LeetyApiResult.NonExistentUser -> {
             Text(text = "User does not exist")
         }
         is LeetyApiResult.Loading -> {
-            Text(text = "Loading please wait")
+            val composition = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loading))
+            val progress = animateLottieCompositionAsState(composition = composition.value, iterations = LottieConstants.IterateForever)
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LottieAnimation(composition = composition.value, progress = progress.value, modifier = Modifier
+                    .size(120.dp)
+                    .padding(10.dp))
+                Text(text = "Loading", fontSize = 25.sp, fontWeight = FontWeight.Bold)
+            }
+
         }
         else -> {
             Text(text = "Failed")

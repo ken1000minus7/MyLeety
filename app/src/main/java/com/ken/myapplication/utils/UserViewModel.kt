@@ -12,18 +12,28 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(private val leetyApiRepository: LeetyApiRepository) : ViewModel() {
     val apiResult : MutableLiveData<LeetyApiResult> = MutableLiveData(null)
+    val isRefreshing : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun getUser(username : String){
         viewModelScope.launch {
-            apiResult.value = LeetyApiResult.Loading()
+            if(isRefreshing.value!=true) apiResult.value = LeetyApiResult.Loading()
             apiResult.value = leetyApiRepository.getUser(username)
         }
     }
 
     fun getUser(){
         viewModelScope.launch {
-            apiResult.value = LeetyApiResult.Loading()
+            if(isRefreshing.value!=true) apiResult.value = LeetyApiResult.Loading()
             apiResult.value = leetyApiRepository.getUser()
+        }
+    }
+
+    fun refresh(username: String?){
+        viewModelScope.launch {
+            isRefreshing.value = true
+            if(username==null) getUser()
+            else getUser(username)
+            isRefreshing.value = false
         }
     }
 }

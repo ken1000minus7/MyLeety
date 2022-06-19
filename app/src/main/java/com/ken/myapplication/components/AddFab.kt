@@ -15,10 +15,10 @@ fun AddFab(lazyListState : LazyListState){
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         text = {
-            Text(text = "Add")
+            Text(text = "ADD")
         },
         icon = {
-            Icon(Icons.Default.Add,"Add")
+            Icon(Icons.Default.Add,"ADD")
         },
         onClick = { Toast.makeText(context,"Search up ma boi",Toast.LENGTH_SHORT).show() },
         expanded = lazyListState.isScrollingUp()
