@@ -8,8 +8,7 @@ data class SavedUser(
     val username : String,
     val userAvatar : String?,
     val aboutMe : String?,
-    val firstName : String?,
-    val lastName : String?,
+    val name : String?,
     @PrimaryKey(autoGenerate = true)
     val id : Int? = null
 )

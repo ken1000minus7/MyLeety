@@ -40,8 +40,7 @@ data class User(
             username,
             profile.userAvatar,
             profile.aboutMe,
-            firstName,
-            lastName
+            profile.realName
         )
     }
 }

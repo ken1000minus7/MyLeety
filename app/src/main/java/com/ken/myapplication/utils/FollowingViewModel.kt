@@ -25,4 +25,10 @@ class FollowingViewModel @Inject constructor(private val savedUserRepository: Sa
             savedUserRepository.insertUser(user)
         }
     }
+
+    fun deleteUser(user: SavedUser){
+        viewModelScope.launch(Dispatchers.IO) {
+            savedUserRepository.deleteUser(user)
+        }
+    }
 }
