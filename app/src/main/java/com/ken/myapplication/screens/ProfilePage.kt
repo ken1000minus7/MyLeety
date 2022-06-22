@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -111,44 +113,65 @@ fun ProfileContent(user : User){
             }
 
             Text(
-                text = user.username,
-                fontSize = 25.sp,
+                text = user.profile.realName ?: "",
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.layoutId("name")
             )
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .layoutId("quesStats")
-            ) {
-                QuestionStats(
-                    title = "Easy",
-                    value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[1].count else 0,
-                    color = Color.Green
-                )
-                QuestionStats(
-                    title = "Medium",
-                    value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[2].count else 0,
-                    color = Color(0xFFC94E0C)
-                )
-                QuestionStats(
-                    title = "Hard",
-                    value =  if(user?.submitStats!=null && user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[3].count else 0,
-                    color = Color.Red
-                )
-            }
+            Text(
+                text = user.username,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Light,
+                modifier = Modifier.layoutId("username")
+            )
             Text(
                 text = user.profile.aboutMe ?: "",
-                modifier = Modifier.layoutId("about")
+                modifier = Modifier.layoutId("about"),
+                fontSize = 14.sp
             )
-            Button(
-                onClick = {
-                    Toast.makeText(context,user?.profile?.aboutMe,Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.layoutId("button")
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .layoutId("quesStats"),
+                shape = RoundedCornerShape(15.dp)
             ) {
-                Text(text = "Clicky ma boi")
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ElevatedCard(
+                        modifier = Modifier.padding(20.dp).wrapContentSize()
+                    ) {
+                        Text(
+                            text = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[0].count.toString() else "0",
+                            fontSize = 50.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.clip(CircleShape).padding(40.dp)
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        QuestionStats(
+                            title = "Easy",
+                            value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[1].count else 0,
+                            color = Color.Green
+                        )
+                        QuestionStats(
+                            title = "Medium",
+                            value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[2].count else 0,
+                            color = Color(0xFFC94E0C)
+                        )
+                        QuestionStats(
+                            title = "Hard",
+                            value =  if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[3].count else 0,
+                            color = Color.Red
+                        )
+                    }
+                }
             }
         }
     }
@@ -158,6 +181,7 @@ private fun portraitConstraints() : ConstraintSet{
     return ConstraintSet {
         val image = createRefFor("image")
         val name = createRefFor("name")
+        val username = createRefFor("username")
         val quesStats = createRefFor("quesStats")
         val about = createRefFor("about")
         val button = createRefFor("button")
@@ -174,12 +198,18 @@ private fun portraitConstraints() : ConstraintSet{
             end.linkTo(parent.end)
         }
 
-        constrain(quesStats) {
+        constrain(username){
             top.linkTo(name.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(quesStats) {
+            top.linkTo(about.bottom)
         }
 
         constrain(about) {
-            top.linkTo(quesStats.bottom)
+            top.linkTo(username.bottom)
             start.linkTo(parent.start, margin = 20.dp)
             end.linkTo(parent.end, margin = 20.dp)
             width = Dimension.fillToConstraints
@@ -240,8 +270,8 @@ fun QuestionStats(title : String, value : Int, color : Color){
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(10.dp)
     ) {
-        Text(text = value.toString(), fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text(text = title, fontSize = 18.sp, color = color)
+        Text(text = value.toString(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(text = title, fontSize = 16.sp, color = color)
     }
 }
 
