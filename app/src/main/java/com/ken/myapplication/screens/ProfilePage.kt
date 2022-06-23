@@ -144,7 +144,7 @@ fun ProfileContent(user : User){
                         modifier = Modifier.padding(20.dp).wrapContentSize()
                     ) {
                         Text(
-                            text = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[0].count.toString() else "0",
+                            text = if(user.submitStats.acSubmissionNum.size==4) user.submitStats.acSubmissionNum[0].count.toString() else "0",
                             fontSize = 50.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.clip(CircleShape).padding(40.dp)
@@ -157,17 +157,17 @@ fun ProfileContent(user : User){
                     ) {
                         QuestionStats(
                             title = "Easy",
-                            value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[1].count else 0,
+                            value = if(user.submitStats.acSubmissionNum.size==4) user.submitStats.acSubmissionNum[1].count else 0,
                             color = Color.Green
                         )
                         QuestionStats(
                             title = "Medium",
-                            value = if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[2].count else 0,
+                            value = if(user.submitStats.acSubmissionNum.size==4) user.submitStats.acSubmissionNum[2].count else 0,
                             color = Color(0xFFC94E0C)
                         )
                         QuestionStats(
                             title = "Hard",
-                            value =  if(user.submitStats.totalSubmissionNum.size==4) user.submitStats.totalSubmissionNum[3].count else 0,
+                            value =  if(user.submitStats.acSubmissionNum.size==4) user.submitStats.acSubmissionNum[3].count else 0,
                             color = Color.Red
                         )
                     }
