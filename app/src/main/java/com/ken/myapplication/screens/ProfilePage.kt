@@ -141,14 +141,24 @@ fun ProfileContent(user : User){
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ElevatedCard(
-                        modifier = Modifier.padding(20.dp).wrapContentSize()
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .size(150.dp),
+                        shape = CircleShape
                     ) {
-                        Text(
-                            text = if(user.submitStats.acSubmissionNum.size==4) user.submitStats.acSubmissionNum[0].count.toString() else "0",
-                            fontSize = 50.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.clip(CircleShape).padding(40.dp)
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = if (user.submitStats.acSubmissionNum.size == 4) user.submitStats.acSubmissionNum[0].count.toString() else "0",
+                                fontSize = 50.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,
