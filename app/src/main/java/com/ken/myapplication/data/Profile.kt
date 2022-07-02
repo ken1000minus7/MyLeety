@@ -2,7 +2,7 @@ package com.ken.myapplication.data
 
 data class Profile(
     val aboutMe: String? = null,
-    val acStats: AcStats? = null,
+    val acStats: AcStats,
     val age: Int? = null,
     val birthday: String? = null,
     val categoryDiscussCount: Int,

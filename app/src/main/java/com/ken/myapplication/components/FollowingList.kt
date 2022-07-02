@@ -107,11 +107,11 @@ fun FollowingListItem(
     ElevatedCard(
         modifier = Modifier
             .padding(vertical = 6.dp, horizontal = 10.dp)
-            .fillMaxWidth()
-            .clickable {
-                navController.navigate(Routes.DetailsPage + "/${user.username}")
-            },
-        shape = RoundedCornerShape(15.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(15.dp),
+        onClick = {
+            navController.navigate(Routes.DetailsPage + "/${user.username}")
+        }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

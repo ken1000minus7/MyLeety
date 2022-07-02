@@ -1,12 +1,10 @@
 package com.ken.myapplication.screens
 
-import android.widget.Toast
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -17,27 +15,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.airbnb.lottie.compose.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.ken.myapplication.R
 import com.ken.myapplication.api.LeetyApiResult
 import com.ken.myapplication.components.Loading
-import com.ken.myapplication.data.Profile
 import com.ken.myapplication.data.User
 import com.ken.myapplication.utils.UserViewModel
 import com.skydoves.landscapist.glide.GlideImage
@@ -96,21 +90,73 @@ fun ProfileContent(user : User){
                 .verticalScroll(rememberScrollState()),
             animateChanges = true
         ) {
-            ElevatedCard(
+            ConstraintLayout(
                 modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape)
+                    .wrapContentSize()
                     .layoutId("image")
             ) {
-                GlideImage(
-                    imageModel = user.profile.userAvatar,
-                    contentDescription = "Image of ma boi",
+                val (userAvatar, activeBadge) = createRefs()
+                ElevatedCard(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+                        .size(150.dp)
+                        .clip(CircleShape)
+                        .constrainAs(userAvatar) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                ) {
+                    GlideImage(
+                        imageModel = user.profile.userAvatar,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                user.activeBadge?.let { badge->
+                    val toolTipVisible = rememberSaveable {
+                        mutableStateOf(false)
+                    }
+                    val interactionSource = remember {
+                        MutableInteractionSource()
+                    }
+                    val badgeImage = (if(badge.icon[0]=='h') "" else "https://www.leetcode.com") + badge.icon
+                    GlideImage(
+                        imageModel = badgeImage,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .constrainAs(activeBadge) {
+                                end.linkTo(parent.end, margin = 5.dp)
+                                bottom.linkTo(parent.bottom, margin = 5.dp)
+                            }
+                            .clickable(interactionSource = interactionSource,indication = null) {
+                                toolTipVisible.value = !toolTipVisible.value
+                            },
+                        contentScale = ContentScale.Crop
+                    )
+                    if(toolTipVisible.value){
+                        Popup(
+                            onDismissRequest = {
+                                toolTipVisible.value = false
+                            },
+                            alignment = Alignment.BottomCenter,
+                            offset = IntOffset(150,40)
+                        ) {
+                            ElevatedCard {
+                                Text(
+                                    text = badge.hoverText,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(5.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
+
 
             Text(
                 text = user.profile.realName ?: "",
@@ -140,12 +186,19 @@ fun ProfileContent(user : User){
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val acRateVisible = rememberSaveable {
+                        mutableStateOf(false)
+                    }
                     ElevatedCard(
                         modifier = Modifier
                             .padding(20.dp)
                             .size(150.dp),
-                        shape = CircleShape
+                        shape = CircleShape,
+                        onClick = {
+                            acRateVisible.value = !acRateVisible.value
+                        }
                     ) {
+
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -153,11 +206,22 @@ fun ProfileContent(user : User){
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = if (user.submitStats.acSubmissionNum.size == 4) user.submitStats.acSubmissionNum[0].count.toString() else "0",
-                                fontSize = 50.sp,
-                                textAlign = TextAlign.Center
-                            )
+                            if(acRateVisible.value){
+                                Text(
+                                    text = "${user.profile.acStats.acRate}%",
+                                    fontSize = 35.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(text = "Acceptance")
+                            }
+                            else {
+                                Text(
+                                    text = if (user.submitStats.acSubmissionNum.size == 4) user.submitStats.acSubmissionNum[0].count.toString() else "0",
+                                    fontSize = 50.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(text = "Solved")
+                            }
                         }
                     }
                     Row(
@@ -197,7 +261,7 @@ private fun portraitConstraints() : ConstraintSet{
         val button = createRefFor("button")
 
         constrain(image){
-            top.linkTo(parent.top, margin = 20.dp)
+            top.linkTo(parent.top)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         }
