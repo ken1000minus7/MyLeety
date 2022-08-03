@@ -1,8 +1,11 @@
 package com.ken.myapplication.screens
 
+import android.widget.CalendarView
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -22,14 +25,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Popup
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.layoutId
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.airbnb.lottie.compose.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.ken.myapplication.R
 import com.ken.myapplication.api.LeetyApiResult
 import com.ken.myapplication.components.Loading
 import com.ken.myapplication.data.User
@@ -82,6 +88,8 @@ fun ProfileContent(user : User){
     val context = LocalContext.current
     BoxWithConstraints {
         val constraintSet = if(minWidth < 600.dp) portraitConstraints() else landscapeConstraints()
+        
+
 
         ConstraintLayout(
             constraintSet,
@@ -131,7 +139,7 @@ fun ProfileContent(user : User){
                                 end.linkTo(parent.end, margin = 5.dp)
                                 bottom.linkTo(parent.bottom, margin = 5.dp)
                             }
-                            .clickable(interactionSource = interactionSource,indication = null) {
+                            .clickable(interactionSource = interactionSource, indication = null) {
                                 toolTipVisible.value = !toolTipVisible.value
                             },
                         contentScale = ContentScale.Crop
@@ -247,8 +255,74 @@ fun ProfileContent(user : User){
                     }
                 }
             }
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .layoutId("heatmap"),
+                shape = RoundedCornerShape(15.dp)
+            ){
+                AndroidView(factory = {
+                    CalendarView(it)
+                })
+            }
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .layoutId("badges"),
+                shape = RoundedCornerShape(15.dp)
+            ){
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)
+                ) {
+                    Row(
+                        Modifier.padding(top = 10.dp, start = 12.dp)
+                    ) {
+                        Text(text = "Badges: ", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(text = user.badges.size.toString(), fontSize = 22.sp)
+                    }
+                    if(user.badges.isNotEmpty()){
+                        LazyRow(
+                            Modifier.padding(10.dp)
+                        ){
+                            items(user.badges){ badge->
+                                val badgeImage = (if(badge.icon[0]=='h') "" else "https://www.leetcode.com") + badge.icon
+                                Column(
+                                    modifier = Modifier.height(180.dp).width(180.dp).padding(horizontal = 10.dp),
+                                    verticalArrangement = Arrangement.SpaceEvenly,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    GlideImage(
+                                        imageModel = badgeImage,
+                                        modifier = Modifier.height(100.dp).padding(bottom = 10.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                    Text(text = badge.displayName, fontSize = 12.sp, textAlign = TextAlign.Center)
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        val composition = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(
+                            R.raw.empty_animation))
+                        val progress = animateLottieCompositionAsState(composition = composition.value, iterations = LottieConstants.IterateForever)
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            LottieAnimation(composition = composition.value, progress = progress.value, modifier = Modifier
+                                .size(120.dp))
+                            Text(text = "No badges yet", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
         }
+
     }
+
 }
 
 private fun portraitConstraints() : ConstraintSet{
@@ -259,6 +333,8 @@ private fun portraitConstraints() : ConstraintSet{
         val quesStats = createRefFor("quesStats")
         val about = createRefFor("about")
         val button = createRefFor("button")
+        val heatmap = createRefFor("heatmap")
+        val badges = createRefFor("badges")
 
         constrain(image){
             top.linkTo(parent.top)
@@ -291,6 +367,18 @@ private fun portraitConstraints() : ConstraintSet{
 
         constrain(button){
             top.linkTo(about.bottom, margin = 15.dp)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(heatmap){
+            top.linkTo(quesStats.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }
+
+        constrain(badges){
+            top.linkTo(heatmap.bottom)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         }
